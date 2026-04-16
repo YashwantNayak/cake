@@ -1,123 +1,253 @@
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+export type ScrollMotionTarget = {
+  modelX: number
+  modelY: number
+  modelZ: number
+  rotX: number
+  rotY: number
+  rotZ: number
+  scale: number
+  floatAmplitude: number
+  cameraOffsetX: number
+  cameraOffsetY: number
+  cameraOffsetZ: number
+  lookAtOffsetY: number
+  pointerInfluence: number
+}
+
 export type Vec3 = [number, number, number]
 
-export type ModelMotionKeyframe = {
-  progress: number
-  position: Vec3
-  rotation: Vec3
-  scale: number
-  floatAmplitude: number
+export type MotionKeyframe = {
+  at: number
+  modelPosition?: Vec3
+  rotation?: Vec3
+  scale?: number
+  floatAmplitude?: number
+  cameraOffset?: Vec3
+  lookAtOffsetY?: number
+  pointerInfluence?: number
 }
 
-export type ModelMotionState = {
-  position: Vec3
-  rotation: Vec3
-  scale: number
-  floatAmplitude: number
-}
-
-// Edit these keyframes to control model movement across full-page scroll.
-// progress: 0 = page top, 1 = page bottom
-export const MODEL_MOTION_KEYFRAMES: ModelMotionKeyframe[] = [
+// Edit these keyframes to control where the model moves in each section.
+// `at` is timeline progress from 0 to 1 for that section.
+export const LANDING_KEYFRAMES: MotionKeyframe[] = [
   {
-    progress: 0,
-    position: [0.6, -1.50, 0],
+    at: 0,
+    modelPosition: [-1.6, -1.5, 0],
     rotation: [0.12, 0.2, 0],
-    scale: 0.35,
     floatAmplitude: 0.06,
   },
   {
-    progress: 0.2,
-    position: [-2.6, -1.50, 0],
-    rotation: [0.12, 0.2, 0],
-    scale: 0.35,
-    floatAmplitude: 0.06,
+    at: 1,
+    modelPosition: [-2.4, -1.5, 0],
+    rotation: [0.3, 0.2, 0],
+    floatAmplitude: 0.03,
   },
-  {
-    progress: 0.4,
-    position: [-2.6, -1.50, 0],
-    rotation: [0.12, 0.2, 0],
-    scale: 0.35,
-    floatAmplitude: 0.06,
-  },
-  {
-    progress: 0.8,
-    position: [-2.6, -1.50, 0],
-    rotation: [0.12, 0.2, 0],
-    scale: 0.35,
-    floatAmplitude: 0.06,
-  },
-  {
-    progress: 0.9,
-    position: [0.6, -1.50, 0],
-    rotation: [0.12, 0.2, 0],
-    scale: 0.35,
-    floatAmplitude: 0.00,
-  },
-   {
-    progress: 1,
-    position: [0.6, -1.50, 0],
-    rotation: [0.12, 0.2, 0],
-    scale: 0.35,
-    floatAmplitude: 0.00,
-  },
- 
- 
 ]
 
-const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1)
-
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-
-const lerpVec3 = (a: Vec3, b: Vec3, t: number): Vec3 => [
-  lerp(a[0], b[0], t),
-  lerp(a[1], b[1], t),
-  lerp(a[2], b[2], t),
+export const ABOUT_KEYFRAMES_DESKTOP: MotionKeyframe[] = [
+  {
+    at: 0,
+    modelPosition: [-2.4, -1.5, 0],
+    cameraOffset: [-0.22, 1.1, 0.5],
+    pointerInfluence: 0,
+  },
+  {
+    at: 0.3,
+    modelPosition: [-0.6, -1.5, 0],
+    rotation: [0.12, 0.92, 0],
+    lookAtOffsetY: 0.5,
+    floatAmplitude: 0.00,
+  },
 ]
 
-export function getPageScrollProgress(): number {
-  const scrollable = Math.max(
-    document.documentElement.scrollHeight - window.innerHeight,
-    1,
-  )
-  return clamp01(window.scrollY / scrollable)
+export const ABOUT_KEYFRAMES_MOBILE: MotionKeyframe[] = [
+  {
+    at: 0,
+    pointerInfluence: 0.2,
+    floatAmplitude: 0.02,
+  },
+]
+
+export const WHAT_IDO_KEYFRAMES_DESKTOP: MotionKeyframe[] = [
+  {
+    at: 0,
+    modelPosition: [-0.6, -1.5, 0],
+  },
+  {
+    at: 1,
+    modelPosition: [-0.6, -4.2, 0],
+    rotation: [-0.04, 0.92, 0],
+    scale: 0.32,
+    floatAmplitude: 0,
+  },
+]
+
+export const WHAT_IDO_KEYFRAMES_MOBILE: MotionKeyframe[] = [
+  {
+    at: 0,
+    modelPosition: [0.6, -1.5, 0],
+  },
+  {
+    at: 1,
+    modelPosition: [0.6, -1.8, 0],
+    floatAmplitude: 0,
+  },
+]
+
+function keyframeToTweenVars(frame: MotionKeyframe) {
+  const vars: Partial<ScrollMotionTarget> & { ease: 'none' } = {
+    ease: 'none',
+  }
+
+  if (frame.modelPosition) {
+    vars.modelX = frame.modelPosition[0]
+    vars.modelY = frame.modelPosition[1]
+    vars.modelZ = frame.modelPosition[2]
+  }
+
+  if (frame.rotation) {
+    vars.rotX = frame.rotation[0]
+    vars.rotY = frame.rotation[1]
+    vars.rotZ = frame.rotation[2]
+  }
+
+  if (frame.cameraOffset) {
+    vars.cameraOffsetX = frame.cameraOffset[0]
+    vars.cameraOffsetY = frame.cameraOffset[1]
+    vars.cameraOffsetZ = frame.cameraOffset[2]
+  }
+
+  if (frame.scale !== undefined) {
+    vars.scale = frame.scale
+  }
+
+  if (frame.floatAmplitude !== undefined) {
+    vars.floatAmplitude = frame.floatAmplitude
+  }
+
+  if (frame.lookAtOffsetY !== undefined) {
+    vars.lookAtOffsetY = frame.lookAtOffsetY
+  }
+
+  if (frame.pointerInfluence !== undefined) {
+    vars.pointerInfluence = frame.pointerInfluence
+  }
+
+  return vars
 }
 
-export function getMotionFromProgress(progressInput: number): ModelMotionState {
-  const progress = clamp01(progressInput)
-  const frames = MODEL_MOTION_KEYFRAMES
+function applySectionKeyframes(
+  timeline: gsap.core.Timeline,
+  motionTarget: ScrollMotionTarget,
+  keyframes: MotionKeyframe[],
+) {
+  keyframes.forEach((frame) => {
+    timeline.to(motionTarget, keyframeToTweenVars(frame), frame.at)
+  })
+}
 
-  if (frames.length === 0) {
-    return {
-      position: [0, 0, 0],
-      rotation: [0, 0, 0],
-      scale: 1,
-      floatAmplitude: 0,
-    }
+export function createDefaultScrollMotionTarget(): ScrollMotionTarget {
+  return {
+    modelX: 0.6,
+    modelY: -1.5,
+    modelZ: 0,
+    rotX: 0.12,
+    rotY: 0.2,
+    rotZ: 0,
+    scale: 0.35,
+    floatAmplitude: 0.06,
+    cameraOffsetX: 0,
+    cameraOffsetY: 0,
+    cameraOffsetZ: 0,
+    lookAtOffsetY: 0,
+    pointerInfluence: 1,
   }
+}
 
-  if (progress <= frames[0].progress) {
-    return frames[0]
+export function setCharTimeline(
+  motionTarget: ScrollMotionTarget,
+): () => void {
+  const isDesktop = window.innerWidth > 1024
+  const timelines: gsap.core.Timeline[] = []
+  const triggers: ScrollTrigger[] = []
+
+  const tl1 = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.landing-section',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  })
+  applySectionKeyframes(tl1, motionTarget, LANDING_KEYFRAMES)
+  timelines.push(tl1)
+
+  const tl2 = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.about-section',
+      start: 'top 75%',
+      end: 'center center',
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  })
+
+  if (isDesktop) {
+    applySectionKeyframes(tl2, motionTarget, ABOUT_KEYFRAMES_DESKTOP)
+  } else {
+    applySectionKeyframes(tl2, motionTarget, ABOUT_KEYFRAMES_MOBILE)
   }
+  timelines.push(tl2)
 
-  const last = frames[frames.length - 1]
-  if (progress >= last.progress) {
-    return last
+  const pauseTrigger = ScrollTrigger.create({
+    trigger: '.about-section',
+    start: 'center center',
+    end: '+=200%',
+    pin: '.about-section',
+    pinSpacing: true,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    onEnter: () => {
+      motionTarget.floatAmplitude = 0
+      motionTarget.pointerInfluence = 0
+    },
+    onEnterBack: () => {
+      motionTarget.floatAmplitude = 0
+      motionTarget.pointerInfluence = 0
+    },
+  })
+  triggers.push(pauseTrigger)
+
+  const tl3 = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.whatIDO',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  })
+
+  if (isDesktop) {
+    applySectionKeyframes(tl3, motionTarget, WHAT_IDO_KEYFRAMES_DESKTOP)
+  } else {
+    applySectionKeyframes(tl3, motionTarget, WHAT_IDO_KEYFRAMES_MOBILE)
   }
+  timelines.push(tl3)
 
-  for (let i = 0; i < frames.length - 1; i += 1) {
-    const current = frames[i]
-    const next = frames[i + 1]
-    if (progress >= current.progress && progress <= next.progress) {
-      const segment = Math.max(next.progress - current.progress, 0.0001)
-      const t = (progress - current.progress) / segment
-      return {
-        position: lerpVec3(current.position, next.position, t),
-        rotation: lerpVec3(current.rotation, next.rotation, t),
-        scale: lerp(current.scale, next.scale, t),
-        floatAmplitude: lerp(current.floatAmplitude, next.floatAmplitude, t),
-      }
-    }
+  ScrollTrigger.refresh()
+
+  return () => {
+    timelines.forEach((timeline) => {
+      timeline.scrollTrigger?.kill()
+      timeline.kill()
+    })
+    triggers.forEach((trigger) => trigger.kill())
   }
-
-  return last
 }
