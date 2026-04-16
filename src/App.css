@@ -1,4 +1,4 @@
-@import url('https://fonts.cdnfonts.com/css/southampton-script');
+@import url('https://fonts.cdnfonts.com/css/southampton');
 
 .page {
   position: relative;
@@ -57,8 +57,24 @@
 }
 
 .hero-section {
+  position: relative;
   margin-top: 2rem;
   min-height: calc(100vh - 8rem);
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  width: clamp(18rem, 36vw, 32rem);
+  height: clamp(18rem, 36vw, 32rem);
+  border-radius: 50%;
+  right: clamp(-6rem, -7vw, -2rem);
+  bottom: clamp(-5rem, -8vw, -2rem);
+  background: radial-gradient(circle at 30% 30%, #a73a00 30%, #ffffff 70%);
+  opacity: 0.45;
+  filter: blur(2px);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .hero-copy {
@@ -67,13 +83,31 @@
   max-width: 31rem;
 }
 
-.hero-copy h1 {
+.hero-copy h1,
+.hero-copy h2,
+.hero-copy h3 {
   margin: 0;
-  font-family: 'Southampton Script';
-  font-size: clamp(4rem, 9vw, 8rem);
-  line-height: 0.9;
-  color: #1a1a1a;
-  font-weight: 700;
+  font-family: 'Southampton', cursive;
+  line-height: 0.7;
+  color: #682b00;
+  font-weight: 400;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.hero-copy h1 {
+  font-size: 200px;
+}
+
+.hero-copy h3 {
+  font-size: 100px;
+  padding-left: 90px;
+}
+
+.hero-copy h2 {
+  font-size: 150px;
+  padding-left: 40px;
 }
 
 .hero-copy p {
@@ -94,7 +128,7 @@
 
 .hero-visual {
   min-height: calc(100vh - 8rem);
-  z-index: 20;
+  z-index: 200;
   isolation: isolate;
 }
 
@@ -242,6 +276,13 @@
   .hero-visual,
   .gallery-visual {
     min-height: 20rem;
+  }
+
+  .hero-section::before {
+    width: 15rem;
+    height: 15rem;
+    right: -3.5rem;
+    bottom: -3.5rem;
   }
 
   .three-model-layer {

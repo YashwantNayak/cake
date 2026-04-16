@@ -376,13 +376,9 @@ function App() {
 
       <section className="hero-section section-grid landing-section">
         <div className="hero-copy">
-          <h1>
-            The
-            <br />
-            Pretty
-            <br />
-            Bakes
-          </h1>
+          <h3>The</h3>
+          <h1>Preety</h1>
+          <h2>Bakes</h2>
           <p>
             A cake bakery is a specialized culinary establishment producing
             premium baked goods, including customizable celebration cakes,
