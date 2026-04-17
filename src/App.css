@@ -127,9 +127,144 @@
 }
 
 .hero-visual {
+  position: relative;
+  width: 100%;
   min-height: calc(100vh - 8rem);
+  justify-self: center;
+  align-self: center;
+  display: flex;
+  align-items: center;
   z-index: 200;
   isolation: isolate;
+  perspective: 1000px;
+}
+
+/* Floating background image behind 3D model - stays in hero section only */
+.hero-floating-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.floating-image {
+  position: relative;
+  padding-left: 30%;
+  width: 780px;
+  height: 780px;
+  animation: floating 10s ease-in-out infinite;
+  transition: transform 0.5s ease-out;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+/* Floating animation - gentle up and down motion */
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px) rotateZ(0deg);
+  }
+  25% {
+    transform: translateY(-20px) rotateZ(2deg);
+  }
+  50% {
+    transform: translateY(-35px) rotateZ(-2deg);
+  }
+  75% {
+    transform: translateY(-15px) rotateZ(1deg);
+  }
+}
+
+/* 3D hover effect - tilt on mouse hover */
+.floating-image:hover {
+  animation-play-state: paused;
+  transform: rotateX(-15deg) rotateY(15deg) translateZ(30px) !important;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.3));
+}
+
+.floating-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.15));
+}
+
+.video-motion-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 115vh;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
+  z-index: 18;
+}
+
+.video-motion-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.video-motion-progress {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 1.2rem;
+  height: 0.36rem;
+  border-radius: 999px;
+  background: rgba(26, 26, 26, 0.14);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.video-motion-progress-fill {
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, #7e2f00 0%, #cf5a08 100%);
+  will-change: transform;
+}
+
+.video-motion-progress-text {
+  position: absolute;
+  right: 0;
+  bottom: 0.6rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(38, 20, 6, 0.86);
+}
+
+.video-motion-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0));
+  opacity: 1;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+}
+
+.video-motion-loading-text {
+  padding: 0.48rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: rgba(255, 255, 255, 0.82);
+  color: rgba(67, 34, 8, 0.9);
+  box-shadow: 0 8px 18px rgba(60, 28, 7, 0.14);
 }
 
 .three-model-layer {
@@ -276,6 +411,19 @@
   .hero-visual,
   .gallery-visual {
     min-height: 20rem;
+  }
+
+  .video-motion-shell {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+  }
+
+  .floating-image {
+    width: 200px;
+    height: 200px;
+    animation: floating 5s ease-in-out infinite;
   }
 
   .hero-section::before {
