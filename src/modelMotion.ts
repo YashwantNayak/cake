@@ -62,89 +62,222 @@ export type MotionKeyframe = {
 }
 
 /**
- * Landing Section Animation
- * Animates the model entering from the left side with rotation
- * Timeline: scrolls through the entire landing section
+ * FULL PAGE KEYFRAME SYSTEM
+ * Unified animation progression from page start (0) to end (1)
+ * As user scrolls through entire website, model animates smoothly across all these keyframes
+ * 
+ * Progress Map:
+ * 0.0   = Landing section start (hero)
+ * 0.25  = Landing section end (model moving left)
+ * 0.35  = About section start (model repositioning)
+ * 0.5   = About section middle (model turning toward camera)
+ * 0.65  = About section end (model facing camera, paused state)
+ * 0.75  = Products section start (model begins shrinking)
+ * 1.0   = Products section end (model fully shrunk, at bottom)
  */
-export const LANDING_KEYFRAMES: MotionKeyframe[] = [
+export const FULL_PAGE_KEYFRAMES_DESKTOP: MotionKeyframe[] = [
+  // ===== STAGE 0: LANDING SECTION START (Hero Introduction) =====
   {
-    at: 0, // Start of landing section
-    modelPosition: [-1.6, -1.5, 0], // Model on left side
-    rotation: [0.12, 0.2, 0], // Slight tilt and rotation
+    at: 0,
+    modelPosition: [-1.6, -1.0, 0], // Model enters from left side
+    rotation: [0.12, 0.2, 0], // Slight forward tilt and left rotation
+    scale: 0.03, // Normal size
     floatAmplitude: 0.06, // Gentle bobbing
+    cameraOffset: [0, 0, 0], // Camera center
+    pointerInfluence: 1, // Mouse control enabled
   },
+
+  // ===== STAGE 0.25: LANDING SECTION END (Transition) =====
   {
-    at: 1, // End of landing section
-    modelPosition: [-2.4, -1.5, 0], // Model moves further left
+    at: 0.25,
+    modelPosition: [-1.4, -1.5, 0], // Model moves further left
     rotation: [0.3, 0.2, 0], // More rotation
     floatAmplitude: 0.03, // Reduced bobbing
+    pointerInfluence: 0.8, // Beginning to disable mouse control
   },
-]
 
-/**
- * About Section - Desktop
- * Shows the model turning towards camera with camera movement
- * Timeline: from section start to section center
- */
-export const ABOUT_KEYFRAMES_DESKTOP: MotionKeyframe[] = [
+  // ===== STAGE 0.35: ABOUT SECTION START (Gallery/About Entry) =====
   {
-    at: 0,
-    modelPosition: [-2.4, -1.5, 0], // Model on left side
-    cameraOffset: [-0.22, 1.1, 0.5], // Camera moves left and up
-    pointerInfluence: 0, // Disable mouse control
+    at: 0.35,
+    modelPosition: [-2.0, -1.5, 0], // Model repositioning
+    cameraOffset: [0, 0, 0], // Camera begins moving
+    pointerInfluence: 0.5, // Further disable mouse influence
+    floatAmplitude: 0.02,
   },
-  {
-    at: 0.3, // About 30% through the section
-    modelPosition: [-0.6, -1.5, 0], // Model rotates toward center
-    rotation: [0.12, 0.92, 0], // Almost facing camera
-    lookAtOffsetY: 0.5, // Camera looks slightly up
-    floatAmplitude: 0.00, // No bobbing
-  },
-]
 
-/**
- * About Section - Mobile
- * Simplified mobile animation with minimal camera movement
- */
-export const ABOUT_KEYFRAMES_MOBILE: MotionKeyframe[] = [
+  // ===== STAGE 0.5: ABOUT SECTION MIDDLE (Turning toward Camera) =====
   {
-    at: 0,
-    pointerInfluence: 0.2, // Less mouse influence on mobile
-    floatAmplitude: 0.02, // Subtle bobbing
-  },
-]
-
-/**
- * What I Do Section - Desktop
- * Shows model shrinking and moving down as user scrolls
- * Timeline: from section start to end
- */
-export const WHAT_IDO_KEYFRAMES_DESKTOP: MotionKeyframe[] = [
-  {
-    at: 0,
-    modelPosition: [-0.6, -1.5, 0], // Model centered
-  },
-  {
-    at: 1, // End of products section
-    modelPosition: [-0.6, -4.2, 0], // Model moves far down
-    rotation: [-0.04, 0.92, 0], // Slight tilt
-    scale: 0.32, // Shrink to 32% size
+    at: 0.5,
+    modelPosition: [-0.6, -1.5, 0], // Model moves toward center
+    rotation: [0.12, 0.92, 0], // Almost facing camera (Y rotation ~90°)
+    cameraOffset: [-0.22, 1.1, 0.5], // Camera fully positioned
+    lookAtOffsetY: 0.5, // Camera looks slightly up at face
     floatAmplitude: 0, // No bobbing
+    pointerInfluence: 0, // Disable all mouse control
+  },
+
+  // ===== STAGE 0.65: ABOUT SECTION END (Paused/Pinned State) =====
+  {
+    at: 0.65,
+    modelPosition: [-0.6, -1.5, 0], // Model stays centered, facing camera
+    rotation: [0.12, 0.92, 0], // Maintains same rotation
+    cameraOffset: [-0.22, 1.1, 0.5], // Camera stable
+    floatAmplitude: 0, // Completely still
+    pointerInfluence: 0, // No mouse influence
+  },
+
+  // ===== STAGE 0.75: PRODUCTS SECTION START (Transition Down) =====
+  {
+    at: 0.75,
+    modelPosition: [-0.6, -2.0, 0], // Model begins moving down
+    rotation: [-0.04, 0.92, 0], // Slight tilt
+    scale: 0.33, // Start shrinking
+    floatAmplitude: 0,
+    pointerInfluence: 0,
+    cameraOffset: [0, 0, 0], // Camera returns to normal
+  },
+
+  // ===== STAGE 1.0: PRODUCTS SECTION END (Full Page Bottom) =====
+  {
+    at: 1.0,
+    modelPosition: [-0.6, -4.2, 0], // Model moves to far bottom
+    rotation: [-0.04, 0.92, 0], // Slight tilt maintained
+    scale: 0.32, // Fully shrunk
+    floatAmplitude: 0, // No movement
+    pointerInfluence: 0, // No mouse influence
+    cameraOffset: [0, 0, 0], // Camera returns to normal
   },
 ]
 
 /**
- * What I Do Section - Mobile
- * Simplified mobile version with less extreme scaling
+ * FULL PAGE KEYFRAME SYSTEM - MOBILE VERSION
+ * Simplified animation for mobile devices with less dramatic changes
  */
-export const WHAT_IDO_KEYFRAMES_MOBILE: MotionKeyframe[] = [
+export const FULL_PAGE_KEYFRAMES_MOBILE: MotionKeyframe[] = [
+  // ===== STAGE 0: LANDING SECTION START =====
   {
     at: 0,
-    modelPosition: [0.6, -1.5, 0], // Slightly offset for mobile
+    modelPosition: [0.6, -1.5, 0],
+    rotation: [0.12, 0.2, 0],
+    scale: 0.35,
+    floatAmplitude: 0.04,
+    pointerInfluence: 0.3, // Reduced mouse influence on mobile
+  },
+
+  // ===== STAGE 0.25: LANDING SECTION END =====
+  {
+    at: 0.25,
+    modelPosition: [1.4, -1.5, 0],
+    rotation: [0.14, 0.3, 0],
+    floatAmplitude: 0.02,
+    pointerInfluence: 0.2,
+  },
+
+  // ===== STAGE 0.35: ABOUT SECTION START =====
+  {
+    at: 0.35,
+    modelPosition: [1.2, -1.5, 0],
+    floatAmplitude: 0.01,
+    pointerInfluence: 0.1,
+  },
+
+  // ===== STAGE 0.5: ABOUT SECTION MIDDLE =====
+  {
+    at: 0.5,
+    modelPosition: [0, -1.5, 0],
+    rotation: [0.12, 0.45, 0], // Less extreme rotation on mobile
+    floatAmplitude: 0,
+    pointerInfluence: 0,
+  },
+
+  // ===== STAGE 0.65: ABOUT SECTION END =====
+  {
+    at: 0.65,
+    modelPosition: [0, -1.5, 0],
+    floatAmplitude: 0,
+    pointerInfluence: 0,
+  },
+
+  // ===== STAGE 0.75: PRODUCTS SECTION START =====
+  {
+    at: 0.75,
+    modelPosition: [0, -1.8, 0],
+    scale: 0.34,
+    floatAmplitude: 0,
+  },
+
+  // ===== STAGE 1.0: PRODUCTS SECTION END =====
+  {
+    at: 1.0,
+    modelPosition: [0, -2.0, 0],
+    scale: 0.32,
+    floatAmplitude: 0,
+    pointerInfluence: 0,
+  },
+]
+
+// Legacy keyframes (kept for backward compatibility reference)
+export const LANDING_KEYFRAMES: MotionKeyframe[] = [
+  {
+    at: 0,
+    modelPosition: [-1.6, -1.5, 0],
+    rotation: [0.12, 0.2, 0],
+    floatAmplitude: 0.06,
   },
   {
     at: 1,
-    modelPosition: [0.6, -1.8, 0], // Subtle downward movement
+    modelPosition: [-2.4, -1.5, 0],
+    rotation: [0.3, 0.2, 0],
+    floatAmplitude: 0.03,
+  },
+]
+
+export const ABOUT_KEYFRAMES_DESKTOP: MotionKeyframe[] = [
+  {
+    at: 0,
+    modelPosition: [-2.4, -1.5, 0],
+    cameraOffset: [-0.22, 1.1, 0.5],
+    pointerInfluence: 0,
+  },
+  {
+    at: 0.3,
+    modelPosition: [-0.6, -1.5, 0],
+    rotation: [0.12, 0.92, 0],
+    lookAtOffsetY: 0.5,
+    floatAmplitude: 0.00,
+  },
+]
+
+export const ABOUT_KEYFRAMES_MOBILE: MotionKeyframe[] = [
+  {
+    at: 0,
+    pointerInfluence: 0.2,
+    floatAmplitude: 0.02,
+  },
+]
+
+export const WHAT_IDO_KEYFRAMES_DESKTOP: MotionKeyframe[] = [
+  {
+    at: 0,
+    modelPosition: [-0.6, -1.5, 0],
+  },
+  {
+    at: 1,
+    modelPosition: [-0.6, -4.2, 0],
+    rotation: [-0.04, 0.92, 0],
+    scale: 0.32,
+    floatAmplitude: 0,
+  },
+]
+
+export const WHAT_IDO_KEYFRAMES_MOBILE: MotionKeyframe[] = [
+  {
+    at: 0,
+    modelPosition: [0.6, -1.5, 0],
+  },
+  {
+    at: 1,
+    modelPosition: [0.6, -1.8, 0],
     floatAmplitude: 0,
   },
 ]
@@ -236,10 +369,17 @@ export function createDefaultScrollMotionTarget(): ScrollMotionTarget {
 }
 
 /**
- * Setup all scroll-linked animation timelines
- * Creates GSAP timelines for each page section with ScrollTrigger
+ * Setup unified scroll-linked animation timeline
+ * Creates ONE single GSAP timeline that controls the model animation across entire page scroll
+ * Progress: 0 (top of page) → 1 (bottom of page)
  * 
- * Returns a cleanup function to kill all timelines when component unmounts
+ * As user scrolls from top to bottom, the model:
+ * - Enters from left side (0 → 0.25)
+ * - Repositions and turns toward camera (0.25 → 0.5)
+ * - Stays centered and paused (0.5 → 0.65)
+ * - Shrinks and moves down (0.65 → 1.0)
+ * 
+ * Returns a cleanup function to kill the timeline when component unmounts
  */
 export function setCharTimeline(
   motionTarget: ScrollMotionTarget,
@@ -247,110 +387,37 @@ export function setCharTimeline(
   // Detect device type for different animations
   const isDesktop = window.innerWidth > 1024
   
-  // Track all timelines and triggers so we can clean them up later
-  const timelines: gsap.core.Timeline[] = []
-  const triggers: ScrollTrigger[] = []
+  // Select keyframes based on device
+  const keyframes = isDesktop ? FULL_PAGE_KEYFRAMES_DESKTOP : FULL_PAGE_KEYFRAMES_MOBILE
 
   /**
-   * Timeline 1: Landing Section
-   * Plays while scrolling through the hero section at the top
+   * Create ONE unified timeline for entire page scroll
+   * Triggers on the document scrolling from top to bottom
    */
-  const tl1 = gsap.timeline({
+  const mainTimeline = gsap.timeline({
     scrollTrigger: {
-      trigger: '.landing-section', // The element that triggers this animation
-      start: 'top top', // Start when section top reaches viewport top
-      end: 'bottom top', // End when section bottom leaves viewport
-      scrub: true, // Sync animation directly to scrollbar
-      invalidateOnRefresh: true, // Recalculate on resize
-    },
-  })
-  applySectionKeyframes(tl1, motionTarget, LANDING_KEYFRAMES)
-  timelines.push(tl1)
-
-  /**
-   * Timeline 2: About Section
-   * Plays while scrolling through the about/gallery section
-   * Uses different keyframes for mobile vs desktop
-   */
-  const tl2 = gsap.timeline({
-    scrollTrigger: {
-      trigger: '.about-section',
-      start: 'top 75%', // Start when section top reaches 75% from top
-      end: 'center center', // End when section center reaches viewport center
-      scrub: true,
-      invalidateOnRefresh: true,
+      trigger: 'body', // Track entire body scroll
+      start: 'top top', // Start when body top is at viewport top
+      end: 'bottom bottom', // End when body bottom reaches viewport bottom
+      scrub: true, // Sync animation directly to scroll position
+      invalidateOnRefresh: true, // Recalculate on window resize
+      markers: false, // Set to true for debugging progress
     },
   })
 
-  // Use different animation for mobile vs desktop
-  if (isDesktop) {
-    applySectionKeyframes(tl2, motionTarget, ABOUT_KEYFRAMES_DESKTOP)
-  } else {
-    applySectionKeyframes(tl2, motionTarget, ABOUT_KEYFRAMES_MOBILE)
-  }
-  timelines.push(tl2)
+  // Apply all keyframes to the single timeline
+  // Each keyframe's `at` value (0-1) maps to scroll progress
+  applySectionKeyframes(mainTimeline, motionTarget, keyframes)
 
-  /**
-   * Pause Trigger: About Section Pin
-   * Pins the about section to the viewport while user scrolls
-   * Disables model animation while pinned
-   */
-  const pauseTrigger = ScrollTrigger.create({
-    trigger: '.about-section',
-    start: 'center center ', // Pin when section center reaches viewport center
-    end: '+=200%', // Keep pinned for 200% of container's height
-    pin: '.about-section', // Pin this element
-    pinSpacing: true, // Add spacing for pinned section
-    anticipatePin: 1, // Smooth pinning transition
-    invalidateOnRefresh: true,
-    onEnter: () => {
-      // Disable animation when entering pinned area
-      motionTarget.floatAmplitude = 0
-      motionTarget.pointerInfluence = 0
-    },
-    onEnterBack: () => {
-      // Also disable when scrolling back into pinned area
-      motionTarget.floatAmplitude = 0
-      motionTarget.pointerInfluence = 0
-    },
-  })
-  triggers.push(pauseTrigger)
-
-  /**
-   * Timeline 3: Products (What I Do) Section
-   * Plays while scrolling through the products section at the bottom
-   * Model shrinks and moves down as user scrolls
-   */
-  const tl3 = gsap.timeline({
-    scrollTrigger: {
-      trigger: '.whatIDO',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: true,
-      invalidateOnRefresh: true,
-    },
-  })
-
-  // Use different animation for mobile vs desktop
-  if (isDesktop) {
-    applySectionKeyframes(tl3, motionTarget, WHAT_IDO_KEYFRAMES_DESKTOP)
-  } else {
-    applySectionKeyframes(tl3, motionTarget, WHAT_IDO_KEYFRAMES_MOBILE)
-  }
-  timelines.push(tl3)
-
-  // Refresh ScrollTrigger to recalculate all trigger positions
+  // Refresh ScrollTrigger to recalculate all positions and triggers
   ScrollTrigger.refresh()
 
   /**
    * Return cleanup function
-   * Kills all timelines and triggers to prevent memory leaks when component unmounts
+   * Kills the timeline to prevent memory leaks when component unmounts
    */
   return () => {
-    timelines.forEach((timeline) => {
-      timeline.scrollTrigger?.kill() // Kill the ScrollTrigger instance
-      timeline.kill() // Kill the timeline animation
-    })
-    triggers.forEach((trigger) => trigger.kill()) // Kill standalone triggers
+    mainTimeline.scrollTrigger?.kill() // Kill the ScrollTrigger
+    mainTimeline.kill() // Kill the timeline animation
   }
 }
